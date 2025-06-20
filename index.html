@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE Term 2 Results Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <!-- Loading Spinner -->
+    <div class="loading">
+        <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
+
+    <div class="min-h-screen">
+        <!-- Header -->
+        <header class="bg-blue-700 text-white py-4 shadow-lg">
+            <div class="container mx-auto px-4 flex items-center justify-center">
+                <img src="https://upload.wikimedia.org/wikipedia/en/thumb/9/95/CBSE_new_logo.svg/1200px-CBSE_new_logo.svg.png" alt="CBSE Logo" class="h-16 mr-4">
+                <div class="text-center">
+                    <h1 class="text-2xl md:text-3xl font-bold">CBSE Term 2 Results Portal</h1>
+                    <p class="text-sm md:text-base">Secondary School Examination (Class X) 2025</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="container mx-auto px-4 py-8">
+            <!-- Input Form -->
+            <div class="max-w-md mx-auto bg-white rounded-lg shadow-md p-6 mb-8">
+                <form id="resultForm" class="space-y-4">
+                    <div>
+                        <label for="admitId" class="block text-gray-700 font-medium mb-2">ADMIT ID</label>
+                        <input type="text" id="admitId" required
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your Admit ID">
+                    </div>
+                    <div>
+                        <label for="motherName" class="block text-gray-700 font-medium mb-2">Mother's Name</label>
+                        <input type="text" id="motherName" required
+                            class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter your Mother's Name">
+                    </div>
+                    <button type="submit"
+                        class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-200">
+                        Check Result
+                    </button>
+                </form>
+            </div>
+
+            <!-- Result Card -->
+            <div id="resultCard" class="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6 hidden">
+                <div class="text-center mb-6">
+                    <h2 class="text-xl font-bold text-gray-800">CENTRAL BOARD OF SECONDARY EDUCATION</h2>
+                    <p class="text-md text-gray-600">Secondary School Examination (Class X) 2025</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                    <div>
+                        <p class="text-gray-600">Candidate Name: <span id="candidateName" class="font-medium"></span></p>
+                        <p class="text-gray-600">Mother's Name: <span id="motherNameDisplay" class="font-medium"></span></p>
+                    </div>
+                    <div>
+                        <p class="text-gray-600">CBSE Admit Card ID: <span id="admitIdDisplay" class="font-medium"></span></p>
+                        <p class="text-gray-600">Seat No: <span id="seatNo" class="font-medium"></span></p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full border-collapse border">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="border p-2 text-left">Subject</th>
+                                <th class="border p-2 text-left">Marks</th>
+                                <th class="border p-2 text-left">Subject Code</th>
+                            </tr>
+                        </thead>
+                        <tbody id="marksTable"></tbody>
+                    </table>
+                </div>
+
+                <div class="mt-6 space-y-2">
+                    <p class="text-gray-700">Total: <span id="totalMarks" class="font-bold"></span></p>
+                    <p class="text-gray-700">Percentage: <span id="percentage" class="font-bold"></span></p>
+                    <p class="text-gray-700">Result: <span id="resultStatus" class="font-bold text-green-600"></span></p>
+                </div>
+
+                <div class="mt-6 text-sm text-gray-500">
+                    <p class="mb-2"><em>Note: E-Indicates total marks and Percentage calculated on "Best 5 Criteria" from 8 subjects</em></p>
+                    <p class="text-xs">Disclaimer: Neither Target Learning Ventures nor Central Board Of Secondary & Higher Secondary Education, Pune is responsible for any inadvertent error that may have crept in the results being published online. The results published on net are for immediate information only. These can not be treated as original statement of marks.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.getElementById('resultForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const loading = document.querySelector('.loading');
+            loading.style.display = 'block';
+
+            setTimeout(() => {
+                const admitId = document.getElementById('admitId').value;
+                const motherName = document.getElementById('motherName').value;
+
+                if (admitId && motherName) {
+                    // Mock data for demonstration
+                    const studentData = {
+                        name: "Akshad Namdev Kadam",
+                        motherName: motherName,
+                        admitId: admitId,
+                        seatNo: "L054899",
+                        subjects: [
+                            { name: "Physics", marks: 72, code: "03" },
+                            { name: "Computer Science", marks: 84, code: "16" },
+                            { name: "Sanskrit", marks: 82, code: "15" },
+                            { name: "Mathematics", marks: 66, code: "71" },
+                            { name: "Social", marks: 77, code: "72" }
+                        ]
+                    };
+
+                    displayResult(studentData);
+                    loading.style.display = 'none';
+                    document.getElementById('resultCard').classList.remove('hidden');
+                } else {
+                    alert('Please fill in all fields');
+                    loading.style.display = 'none';
+                }
+            }, 1500);
+        });
+
+        function displayResult(data) {
+            document.getElementById('candidateName').textContent = data.name;
+            document.getElementById('motherNameDisplay').textContent = data.motherName;
+            document.getElementById('admitIdDisplay').textContent = data.admitId;
+            document.getElementById('seatNo').textContent = data.seatNo;
+
+            const marksTable = document.getElementById('marksTable');
+            marksTable.innerHTML = '';
+            
+            let totalMarks = 0;
+            data.subjects.forEach(subject => {
+                totalMarks += subject.marks;
+                marksTable.innerHTML += `
+                    <tr>
+                        <td class="border p-2">${subject.name}</td>
+                        <td class="border p-2">${subject.marks}</td>
+                        <td class="border p-2">${subject.code}</td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('totalMarks').textContent = totalMarks;
+            const percentage = (totalMarks / (data.subjects.length * 100)) * 100;
+            document.getElementById('percentage').textContent = percentage.toFixed(1) + '%';
+            document.getElementById('resultStatus').textContent = percentage >= 33 ? 'Pass' : 'Fail';
+        }
+    </script>
+<script>document.body.addEventListener('wheel', e => { if (!e.ctrlKey) return; e.preventDefault(); return }, { passive: false })</script>
+	</body>
+</html>
